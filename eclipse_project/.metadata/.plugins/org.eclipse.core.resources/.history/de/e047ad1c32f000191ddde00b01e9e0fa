@@ -1,0 +1,31 @@
+package se.team2.views;
+
+import se.team2.controllers.RequestHandler;
+
+public class TestRequestHandler implements RequestHandler {
+
+	@Override
+	public int getInteger(String key) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getDouble(String key) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getString(String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String[] keys() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

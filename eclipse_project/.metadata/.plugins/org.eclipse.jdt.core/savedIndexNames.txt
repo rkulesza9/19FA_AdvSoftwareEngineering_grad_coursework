@@ -1,0 +1,15 @@
+INDEX VERSION 1.131+C:\Users\kules\School\ADV_SOFTWARE_ENG\group\github\v19\eclipse_project\.metadata\.plugins\org.eclipse.jdt.core
+786708747.index
+3141379509.index
+2842528100.index
+474326111.index
+2751740799.index
+1047758449.index
+1553984491.index
+778130026.index
+714192484.index
+547352680.index
+3499480718.index
+249558435.index
+3333817624.index
+4190116966.index

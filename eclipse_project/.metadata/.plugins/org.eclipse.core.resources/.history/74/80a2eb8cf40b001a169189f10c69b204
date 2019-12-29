@@ -1,0 +1,63 @@
+package se.team2.views;
+
+import java.util.Arrays;
+
+import se.team2.controllers.ServerRequestHandler;
+import se.team2.utils.Table;
+
+public class Test {
+
+	public static void main(String[] args) throws Exception {
+		ServerRequestHandler srh = new ServerRequestHandler();
+		srh.setParam("symbol", "rfem");
+		srh.makeRequest(ServerRequestHandler.COMPANY_INFO);
+		
+		System.out.println("IDENTIFICATION");
+		id_table(srh).print();
+	}
+	
+	public static Table id_table(ServerRequestHandler srh) {
+		Table t = new Table();
+		t.setShowVerticalLines(true);
+		
+		String[] fields = dropNullFields(srh,new String[] { "companyName", "securityName", "primarySicCode", "ceo" });
+		System.out.println(Arrays.toString(fields));
+		
+		String[] row = new String[fields.length];
+		for(int x = 0; x < row.length; x++) {
+			row[x] = srh.getString(fields[x], 0);
+		}
+		t.addRow(row);
+		
+		return t;
+	}
+	
+	public static String[] dropNullFields(ServerRequestHandler srh,String[] fields) {
+		boolean[] drop_column = new boolean[fields.length];
+		int count = fields.length;
+		
+		for(int x = 0; x < fields.length; x++) {
+			System.out.println(srh.getString(fields[x], 0));
+			System.out.println(srh.getString(fields[x], 0)==null);
+			if (srh.getString(fields[x],0) == null) {
+				drop_column[x] = true;
+				count = count - 1;
+			} else {
+				drop_column[x] = false;
+			}
+		}
+		
+		String[] fields2 = new String[count];
+		int index = 0;
+		for(int x = 0; x < fields.length; x++) {
+			if(!drop_column[x]) {
+				fields2[index] = fields[x];
+				index++;
+			}
+		}
+		
+		return fields2;
+		
+	}
+	
+}

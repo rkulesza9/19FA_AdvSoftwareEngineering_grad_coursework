@@ -1,0 +1,44 @@
+package se.team2.views;
+
+import se.team2.controllers.RequestHandler;
+
+public class Test {
+
+	public static void main(String[] args) {
+		System.out.println(makeOutputTable());
+		
+	}
+	
+	private static String makeOutputTable() {
+		String[] fields = {"str1asdf", "str2asdfasdf", "str3asdf" };
+		String[] values = {"102", "abc", "10.2" };
+		int[] column_lengths = new int[fields.length];
+		String extra_space = "     ";
+		String header = "";
+		for(int x = 0; x < fields.length; x++) {
+			header += fields[x]+extra_space;
+			column_lengths[x] = fields[x].length();
+		}
+		header += "\n";
+		
+		String body = "";
+			for(int x = 0; x < fields.length; x++) {
+				String value = values[x];
+				body += value + (column_lengths[x] - value.length()) + extra_space;
+			}
+			body += "\n";
+		
+		return header+body;
+	}
+	
+	public static boolean isDouble(String str) {
+		try {
+			Double d;
+			d = Double.parseDouble(str);
+			return true;
+		} catch(Exception e) {
+			return false;
+		}
+	}
+
+}

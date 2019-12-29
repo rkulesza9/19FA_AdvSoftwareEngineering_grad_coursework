@@ -1,0 +1,112 @@
+package se.team2.views;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+
+public class ChartFrame extends JFrame {
+	private Application frame = null;
+	
+	public ChartFrame(Application frm) {
+		super("Choose Start and End Dates");
+		frame = frm;
+		init();
+	}
+	
+	public ChartFrame() {
+		super("Choose Start and End Dates");
+		init();
+	}
+	
+	public void setParent(Application frame) {
+		this.frame = frame;
+	}
+	
+	public static void main(String[]args) {
+		JFrame frame = new ChartFrame(null);
+		frame.setVisible(true);
+	}
+	
+	private void init() {
+		ChartFrame app = this;
+		setBounds(100, 100, 500, 250);
+		setResizable(false);
+		getContentPane().setLayout(null);
+		//setVisible(true);
+		
+		JLabel start_date_label = new JLabel("Start Date (YYYY-MM-DD): ");
+		start_date_label.setBounds(0,0,300,10);
+		getContentPane().add(start_date_label);
+		
+		JTextField start_date_text = new JTextField(100);
+		start_date_text.setBounds(0,20,100,25);
+		start_date_text.setText("2019-09-11");
+		getContentPane().add(start_date_text);
+		
+		JLabel end_date_label = new JLabel("Start Date (YYYY-MM-DD): ");
+		end_date_label.setBounds(0,80,300,10);
+		getContentPane().add(end_date_label);
+		
+		JTextField end_date_text = new JTextField(100);
+		end_date_text.setBounds(0,100,100,25);
+		end_date_text.setText("2019-11-11");
+		getContentPane().add(end_date_text);
+		
+		JButton submit = new JButton("submit");
+		submit.setBounds(0,150,75,25);
+		getContentPane().add(submit);
+		
+		submit.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				String start_date = start_date_text.getText();
+				String end_date = end_date_text.getText();
+				
+				if(!isDate(start_date,"yyyy-MM-dd")) {
+					JOptionPane.showMessageDialog(app, "Start Date is not in the proper format!","Date Format Error",JOptionPane.ERROR_MESSAGE);
+				}
+				else if(!isDate(end_date,"yyyy-MM-dd")) {
+					JOptionPane.showMessageDialog(app, "End Date is not in the proper format!", "Date Format Error", JOptionPane.ERROR_MESSAGE);
+				}
+				else if(start_date.equals(end_date)) {
+					JOptionPane.showMessageDialog(app, "Start Date cannot be the same as End Date!", "Invalid Range Error", JOptionPane.ERROR_MESSAGE);
+				}
+				else {
+					app.frame.setAggregateDateBefore(cleanDate(start_date,"yyyy-MM-dd"));
+					app.frame.setAggregateDateAfter(cleanDate(end_date,"yyyy-MM-dd"));
+					
+					setVisible(false);
+				}
+			}
+			
+		});
+	}
+	
+	private boolean isDate(String str,String fmt) {
+		try {
+			SimpleDateFormat dateFormat = new SimpleDateFormat(fmt);
+			dateFormat.parse(str);
+			return true;
+		}catch(Exception e) {
+			return false;
+		}
+	}
+	private String cleanDate(String str,String fmt) {
+		try{
+			SimpleDateFormat dateFormat = new SimpleDateFormat(fmt);
+			return dateFormat.format(dateFormat.parse(str));
+		}catch(Exception e) {
+			return null;
+		}
+	}
+
+
+}

@@ -1,0 +1,146 @@
+package se.team2.test.request_speed;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.http.HttpClientConnection;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.conn.ConnectionRequest;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.routing.HttpRoute;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.util.EntityUtils;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
+import se.team2.controllers.ServerRequestHandler;
+
+public class ServerRequestHandler2 extends ServerRequestHandler {
+	protected CloseableHttpClient httpClient = null;
+
+	public ServerRequestHandler2() throws Exception{
+		super();
+
+		httpClient = HttpClients.createDefault();
+	}
+	
+	private String mode(int rtype) {
+		switch(rtype) {
+		case ServerRequestHandler.DAYS_30_REQUEST:
+			return "30dayreport";
+		case ServerRequestHandler.AGGREGATE_REQUEST:
+			return "aggregate";
+		case ServerRequestHandler.COMPANY_INFO:
+			return "companyinfo";
+		case ServerRequestHandler.POP_SEARCH:
+			return "popsearch";
+		default:
+			return "companyinfo";
+		}
+	}
+	
+	private String get_range(int rtype) {
+		switch(rtype) {
+		case AGGREGATE_REQUEST:
+			return String.format("&date_start=%s&date_end=%s",
+					getParam("date_start"), getParam("date_end"));
+		default:
+			return "";
+		}
+	}
+	
+	private HttpURLConnection connect(int REQUEST_TYPE) throws Exception{
+		String website = String.format("http://fproject-se.ddns.net?mode=%s&symbol=%s%s", 
+				mode(REQUEST_TYPE), getParam("symbol"), get_range(REQUEST_TYPE));
+		
+		URL url = new URL(website);
+		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		
+        con.setUseCaches(false);
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Accept", "text/plain");
+        con.setRequestProperty("Accept", "application/json");
+        con.setDoOutput(true);
+        con.setDoInput(true);
+//        con.setRequestProperty("Content-Length", "1000");
+//        con.setRequestProperty("Connection", "close");
+//        System.setProperty("http.keepAlive", "false"); 
+        con.connect();
+		
+		
+		return con;
+	}
+	
+	public void makeRequest_old(int REQUEST_TYPE) throws Exception{
+
+		HttpURLConnection conn = connect(REQUEST_TYPE);
+		
+		BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		String inputLine;
+		StringBuffer content = new StringBuffer();
+		
+		while((inputLine = in.readLine()) != null) content.append(inputLine);
+		in.close();
+		String jsonString = content.toString();
+		
+		//Parse to Json element
+		JsonParser parser = new JsonParser();
+		JsonElement element = parser.parse(jsonString);
+
+		//Get as Json Array
+		this.jsonArray = element.getAsJsonArray();
+	}
+	
+	
+	
+	@Override
+	public void makeRequest(int REQUEST_TYPE) throws Exception{
+		HttpClientContext context = HttpClientContext.create();
+		HttpClientConnectionManager connMrg = new BasicHttpClientConnectionManager();
+		HttpRoute route = new HttpRoute(new HttpHost("http://fproject-se.ddns.net", 80));
+		// Request new connection. This can be a long process
+		ConnectionRequest connRequest = connMrg.requestConnection(route, null);
+		// Wait for connection up to 10 sec
+		HttpClientConnection conn = connRequest.get(10, TimeUnit.SECONDS);
+		try {
+		    // If not open
+		    if (!conn.isOpen()) {
+		        // establish connection based on its route info
+		        connMrg.connect(conn, route, 1000, context);
+		        // and mark it as route complete
+		        connMrg.routeComplete(conn, route, context);
+		    }
+		    // Do useful things with the connection.
+		    
+		} finally {
+		    connMrg.releaseConnection(conn, null, 1, TimeUnit.MINUTES);
+		}
+	}
+	
+	public void makeRequest_v1(int REQUEST_TYPE) throws Exception{
+		
+		String website = String.format("http://fproject-se.ddns.net?mode=%s&symbol=%s%s", 
+				mode(REQUEST_TYPE), getParam("symbol"), get_range(REQUEST_TYPE));
+		
+		HttpGet request = new HttpGet(website);
+		CloseableHttpResponse response = httpClient.execute(request);
+		
+		HttpEntity entity = response.getEntity();
+		String result = EntityUtils.toString(entity);
+		
+		System.out.println(result);
+		
+		response.close();
+	}
+
+}

@@ -1,0 +1,64 @@
+package se.team2.views;
+
+import javax.swing.JFrame;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel; 
+import org.jfree.chart.JFreeChart; 
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset; 
+import org.jfree.data.category.DefaultCategoryDataset; 
+
+public class BarChart_AWT extends JFrame {
+   
+   public BarChart_AWT( String applicationTitle , String chartTitle ) {
+      super( applicationTitle );        
+      JFreeChart barChart = ChartFactory.createBarChart(
+         chartTitle,           
+         "Company",            
+         "Value",            
+         createDataset(),          
+         PlotOrientation.VERTICAL,           
+         true, true, false);
+         
+      ChartPanel chartPanel = new ChartPanel( barChart );        
+      chartPanel.setPreferredSize(new java.awt.Dimension( 560 , 367 ) );        
+      setContentPane( chartPanel ); 
+   }
+   
+   private CategoryDataset createDataset( ) {
+      final String rfem = "RFEM";        
+      final String googl = "GOOGL";        
+      final String aapl = "AAPL";        
+      final String min = "min";        
+      final String max = "max";        
+      final String average = "average";        
+      final String median = "median";        
+      final DefaultCategoryDataset dataset = 
+      new DefaultCategoryDataset( );  
+
+      dataset.addValue( 1.0 , rfem , min );     
+      dataset.addValue( 5.0 , rfem , max ); 
+      dataset.addValue( 3.0 , rfem , average ); 
+      dataset.addValue( 5.0 , rfem , median );           
+
+      dataset.addValue( 5.0 , googl , min );      
+      dataset.addValue( 10.0 , googl , max );       
+      dataset.addValue( 6.0 , googl , average );     
+      dataset.addValue( 4.0 , googl , median );
+
+      dataset.addValue( 4.0 , aapl , min );           
+      dataset.addValue( 3.0 , aapl , max );        
+      dataset.addValue( 2.0 , aapl , average );    
+      dataset.addValue( 6.0 , aapl , median );               
+
+      return dataset; 
+   }
+   
+   public static void main( String[ ] args ) {
+      BarChart_AWT chart = new BarChart_AWT("Aggregate Report", 
+         "Aggregate Report");
+      chart.pack( );          
+      chart.setVisible( true ); 
+   }
+}

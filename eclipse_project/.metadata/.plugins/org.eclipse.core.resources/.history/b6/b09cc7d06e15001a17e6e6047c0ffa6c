@@ -1,0 +1,19 @@
+package se.team2.test.request_speed;
+
+import java.net.URL;
+
+public class ServerRequestHandler2 extends se.team2.controllers.ServerRequestHandler {
+
+	public ServerRequestHandler2() {
+		super();
+	}
+	
+	@Override
+	public void makeRequest(int REQUEST_TYPE) throws Exception{
+		String website = "http://fproject-se.ddns.net";
+		
+		URL url = new URL(website);
+		
+	}
+
+}

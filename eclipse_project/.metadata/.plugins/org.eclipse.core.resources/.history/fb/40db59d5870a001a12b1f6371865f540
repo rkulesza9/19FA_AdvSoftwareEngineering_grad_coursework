@@ -1,0 +1,29 @@
+package se.team2.views;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+
+public class DateFrame extends JFrame{
+	
+	public DateFrame() {
+		super("Choose Start and End Dates");
+		setBounds(100, 100, 500, 250);
+		setResizable(false);
+		getContentPane().setLayout(null);
+		setVisible(true);
+		
+		JLabel start_date_label = new JLabel("Start Date (YYYY-MM-DD): ");
+		start_date_label.setBounds(0,0,100,100);
+		getContentPane().add(start_date_label);
+		
+		JTextField start_date_text = new JTextField();
+		start_date_label.setBounds(0,100,100,50);
+		start_date_text.setText("2019-09-11");
+		//getContentPane().add(start_date_text);
+		
+		JLabel end_date_label = new JLabel("End Date (YYYY-MM-DD): ");
+		
+	}
+
+}

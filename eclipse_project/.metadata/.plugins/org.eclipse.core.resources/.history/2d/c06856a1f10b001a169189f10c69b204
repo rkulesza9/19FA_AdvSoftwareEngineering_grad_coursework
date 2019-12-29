@@ -1,0 +1,22 @@
+package se.team2.views;
+
+import java.util.Arrays;
+
+import se.team2.controllers.ServerRequestHandler;
+
+public class Test {
+
+	public static void main(String[] args) throws Exception {
+		ServerRequestHandler srh = new ServerRequestHandler();
+		srh.setParam("symbol", "rfem");
+		srh.makeRequest(ServerRequestHandler.COMPANY_INFO);
+		
+		String[] fields = srh.keys();
+		System.out.println(Arrays.toString(fields));
+		
+		for(String key : fields) {
+			System.out.println(key+"\t"+srh.getString(key, 0));
+		}
+	}
+	
+}

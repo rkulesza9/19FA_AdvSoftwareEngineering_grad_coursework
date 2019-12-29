@@ -1,0 +1,5 @@
+package se.team2.models;
+
+public interface CalculationHandler {
+
+}

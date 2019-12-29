@@ -1,0 +1,7 @@
+package se.team2.views;
+
+import javax.swing.JFrame;
+
+public class ChooseStartEndDates extends JFrame{
+
+}

@@ -1,0 +1,23 @@
+package se.team2.views;
+
+public class Test {
+
+	public static void main(String[] args) {
+		if(!isDouble("asdf")) System.out.println("Test 1 works");
+		else System.out.println("Test 1 Failed");
+		
+		if(isDouble("100.20")) System.out.println("Test 2 works");
+		
+	}
+	
+	public static boolean isDouble(String str) {
+		try {
+			Double d;
+			d = Double.parseDouble(str);
+			return true;
+		} catch(Exception e) {
+			return false;
+		}
+	}
+
+}

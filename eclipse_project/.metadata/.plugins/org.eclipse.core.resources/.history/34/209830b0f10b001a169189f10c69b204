@@ -1,0 +1,34 @@
+package se.team2.views;
+
+import java.util.Arrays;
+
+import se.team2.controllers.ServerRequestHandler;
+import se.team2.utils.Table;
+
+public class Test {
+
+	public static void main(String[] args) throws Exception {
+		ServerRequestHandler srh = new ServerRequestHandler();
+		srh.setParam("symbol", "rfem");
+		srh.makeRequest(ServerRequestHandler.COMPANY_INFO);
+		
+		System.out.println("IDENTIFICATION");
+		id_table(srh).print();
+	}
+	
+	public static Table id_table(ServerRequestHandler srh) {
+		Table t = new Table();
+		
+		String[] fields = new String[] { "companyName", "securityName", "primarySicCode", "ceo" };
+		t.setHeaders(fields);
+		
+		String[] row = new String[fields.length];
+		for(int x = 0; x < row.length; x++) {
+			row[x] = srh.getString(fields[x], 0);
+		}
+		t.addRow(row);
+		
+		return t;
+	}
+	
+}

@@ -1,0 +1,304 @@
+package se.team2.views;
+
+import java.awt.Component;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JRadioButton;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.border.CompoundBorder;
+
+import se.team2.controllers.RequestHandler;
+import se.team2.controllers.ServerRequestHandler;
+
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.Rectangle;
+import java.beans.PropertyChangeListener;
+import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.beans.PropertyChangeEvent;
+
+public class Application
+{
+	private int request_type = 0;
+	private JFrame frame;
+//	private final Action action = new SwingAction();
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args)
+	{
+
+		EventQueue.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				try
+				{
+					Application window = new Application();
+					window.frame.setVisible(true);
+				} catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public Application()
+	{
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	JTextArea txt;
+
+	private void initialize()
+	{
+		frame = new JFrame();
+		frame.setTitle("Team 2 REST GUI");
+		frame.setBounds(100, 100, 1000, 500);
+		//frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+
+		ServerRequestHandler t = new ServerRequestHandler();
+
+		//JTextArea textArea = new JTextArea();
+		//textArea.setBounds(100, 100, 450, 300);
+		//frame.getContentPane().add(textArea);
+
+		
+		txt = new JTextArea(5, 30);
+		JScrollPane scroll = new JScrollPane(txt);
+		int scroll_width = frame.getWidth()-20;
+		int scroll_height = frame.getHeight()-85;
+		int scroll_x = (frame.getWidth() - scroll_width)/2;
+		int scroll_y = (frame.getHeight() - scroll_height)/2;
+		scroll.setBounds(new Rectangle(scroll_x, scroll_y, scroll_width, scroll_height));    
+		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		frame.getContentPane().add(scroll);
+		txt.setWrapStyleWord(true);
+		//txt.setLineWrap(true);
+		txt.setEditable(false);
+		txt.setText("Stock information for 3 main companies. Click on one to find out more information.");
+		
+		addChooseReportOptions(frame);
+		
+		/////////////////////// THIRD BUTTON ///////////////////////
+		
+		
+		frame.addComponentListener(new ComponentAdapter() {
+			
+			@Override
+			public void componentResized(ComponentEvent e) {
+				int scroll_width = frame.getWidth()-20;
+				int scroll_height = frame.getHeight()-85;
+				int scroll_x = (frame.getWidth() - scroll_width)/2;
+				int scroll_y = (frame.getHeight() - scroll_height)/2;
+				scroll.setBounds(new Rectangle(scroll_x,scroll_y,scroll_width,scroll_height));
+				scroll.repaint();
+			}
+			
+		});
+
+		JButton rfem = new JButton("RFEM");
+		rfem.setBounds(170, 0, 117, 29);
+		frame.getContentPane().add(rfem);
+		rfem.setActionCommand("pushRFEM");
+		rfem.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if ("pushRFEM".equals(e.getActionCommand()))
+				{
+					try {
+						t.makeRequest(ServerRequestHandler.RFM_30_DAYS);
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					String x = make30DaysOutputTable(t,"RFEM");
+					txt.setText(x);
+				}
+			}
+		});
+
+		/////////////////////// SECOND BUTTON ///////////////////////
+
+		JButton google = new JButton("Google");
+		google.setBounds(0, 0, 117, 29);
+		frame.getContentPane().add(google);
+		google.setActionCommand("pushGoogle");
+		Application app = this;
+		google.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if ("pushGoogle".equals(e.getActionCommand()))
+				{
+					try {
+						t.makeRequest(app.request_type);
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					String x = "";
+					switch(app.request_type) {
+					case ServerRequestHandler.DAYS_30_REQUEST:
+						x = make30DaysOutputTable(t,"GOOGLE");
+						break;
+					case ServerRequestHandler.AGGREGATE_REQUEST:
+						x = makeAggOutputTable(t,"GOOGLE");
+						break;
+					case ServerRequestHandler.COMPANY_INFO:
+						x = makeCompInfoOutputTable(t,"Google");
+						break;
+					}
+					txt.setText(x);
+				}
+			}
+		});
+
+		/////////////////////// FIRST BUTTON ///////////////////////
+
+		JButton apple = new JButton("Apple");
+		apple.setBounds(333, 0, 117, 29);
+		frame.getContentPane().add(apple);
+		apple.setActionCommand("pushApple");
+
+		apple.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if ("pushApple".equals(e.getActionCommand()))
+				{
+					try {
+						t.makeRequest(ServerRequestHandler.APPLE_30_DAYS);
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					String x = make30DaysOutputTable(t,"APPLE");
+					txt.setText(x);
+				}
+			}
+		});
+	}
+	
+	
+	private static String formatNumber(double num) {
+		DecimalFormat df = new DecimalFormat("#####.#####");
+		return df.format(num);
+	}
+	private static String make30DaysOutputTable(RequestHandler t,String company) {
+		String x = "\t\t"+company+"\t\t\t\nDates\tOpens\tClose\tHighs\tLows\tVolumes\tChange\tChange %\tChange Over Time\tVolume Change\t"
+				  +"Volume Change %\tVolume Change Over Time\n";
+		for (int i = 0; i < t.size(); i++)
+		{
+			x += t.getString("date", i) + "\t" + formatNumber(t.getDouble("open", i)) + "\t" +  formatNumber(t.getDouble("close", i)) + "\t"
+					+ formatNumber(t.getDouble("high", i)) + "\t" + formatNumber(t.getDouble("low", i)) + "\t"
+					+ formatNumber(t.getDouble("volume", i)) + "\t" + formatNumber(t.getDouble("change", i))+ "\t"
+					+ formatNumber(t.getDouble("changePercent", i))+ "\t" + formatNumber(t.getDouble("changeOverTime", i))+ "\t\t"
+					+ formatNumber(t.getDouble("volumeChange", i)) + "\t\t" + formatNumber(t.getDouble("volumeChangePercent", i))+ "\t\t"
+					+ formatNumber(t.getDouble("volumeChangeOverTime", i)) + "\n";
+		}
+		return x;
+	}
+	private static String makeAggOutputTable(RequestHandler t,String company) {
+		System.out.println(Arrays.toString(t.keys()));
+		return "test";
+	}
+	private static String makeCompInfoOutputTable(RequestHandler t,String company) {
+		return "test2";
+	}
+	private static String makeOutputTable(RequestHandler t, String company) {
+		String[] fields = t.keys();
+		int[] column_lengths = new int[fields.length];
+		String extra_space = "     ";
+		String header = "";
+		for(int x = 0; x < fields.length; x++) {
+			header += fields[x]+extra_space;
+			column_lengths[x] = fields[x].length();
+		}
+		header += "\n";
+		
+		for(int x = 0; x < t.size(); x++) {
+			for(String field : fields) {
+				String value = t.getString(field, x);
+				if(Double.valueOf(value))
+			}
+		}
+		
+	}
+	private void addChooseReportOptions(JFrame f) {
+		Application app = this;
+		app.request_type = ServerRequestHandler.DAYS_30_REQUEST;
+		JRadioButton r1 = new JRadioButton("30-Day Report");
+		JRadioButton r2 = new JRadioButton("Company Info");
+		JRadioButton r3 = new JRadioButton("Aggregate Report");
+		
+		r1.setBounds(500,0,120,30);
+		r2.setBounds(620,0,120,30);
+		r3.setBounds(740,0,150,30);
+		
+		ButtonGroup bg = new ButtonGroup();
+		bg.add(r1);
+		bg.add(r2);
+		bg.add(r3);
+		
+		f.add(r1);
+		f.add(r2);
+		f.add(r3);
+		
+		r3.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(r3.isSelected()) {
+					app.request_type = ServerRequestHandler.AGGREGATE_REQUEST;
+				}
+			}
+		});
+		
+		r2.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(r2.isSelected()) {
+					app.request_type = ServerRequestHandler.COMPANY_INFO;
+				}
+			}
+			
+		});
+		
+		r1.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(r1.isSelected()) {
+					app.request_type = ServerRequestHandler.DAYS_30_REQUEST;
+				}
+			}
+			
+		});
+	}
+}

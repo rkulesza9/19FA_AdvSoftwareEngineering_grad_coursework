@@ -1,0 +1,44 @@
+import java.io.*;
+import java.util.*;
+public class FileHandler
+{
+	public void writeTo(String filePath,String output) throws Exception
+	{
+		(new File(filePath)).createNewFile();
+		FileWriter fw = new FileWriter(filePath);	
+		fw.write(output);
+		fw.close();
+	}
+
+	public String readFrom(String filePath) throws Exception
+	{
+		File file = new File(filePath);
+		Scanner input = new Scanner(file);
+		String retval = "";
+		while(input.hasNextLine()) 
+		{
+			retval += input.nextLine();
+			if(input.hasNextLine()) retval += "\n";
+		}
+		return retval;
+	}
+
+	public static void main(String[] args) throws Exception
+	{
+		//Dummy object
+		FileHandler test = new FileHandler();
+		
+		//Create test file with specified output
+		String directory = System.getProperty("user.dir");
+		String filePath = directory + "/fileName.txt";
+		String output = "I hope to see this text again!\nAnd this one as well!";
+
+		//Write to file
+		test.writeTo(filePath,output);
+
+		//Read from and print
+		String printThis = test.readFrom(filePath);
+		System.out.println(printThis);
+	}
+}
+

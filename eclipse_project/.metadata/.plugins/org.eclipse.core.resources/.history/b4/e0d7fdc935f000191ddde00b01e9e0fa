@@ -1,0 +1,9 @@
+package se.team2.models;
+
+public interface Calculator {
+
+	/*
+	 * nothing yet
+	 */
+
+}

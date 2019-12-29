@@ -1,0 +1,19 @@
+package se.team2.views;
+
+import javax.swing.JFrame;
+
+public class DateFrame extends JFrame{
+	
+	public DateFrame() {
+		super("Choose Start and End Dates");
+		setBounds(100, 100, 1000, 500);
+		setResizable(false);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		getContentPane().setLayout(null);
+	}
+	
+	public static void main(String[]args) {
+		DateFrame a = new DateFrame();
+	}
+
+}

@@ -1,0 +1,5 @@
+package se.team2.controllers;
+
+public class ServerRequestHandler {
+
+}

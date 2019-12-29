@@ -1,0 +1,4 @@
+module kean.se_project.module {
+	requires java.desktop;
+	exports java.awt.EventQueue;
+}

@@ -1,0 +1,9 @@
+package se.team2.views;
+
+public class Test {
+
+	public static void main(String[] args) {
+		Double.parseDouble("asdf");
+	}
+
+}

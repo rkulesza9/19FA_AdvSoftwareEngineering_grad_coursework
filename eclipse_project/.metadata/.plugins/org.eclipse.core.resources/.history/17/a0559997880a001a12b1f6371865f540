@@ -1,0 +1,20 @@
+package se.team2.views;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
+public class DateFrame extends JFrame{
+	
+	public DateFrame() {
+		super("Choose Start and End Dates");
+		setBounds(100, 100, 500, 250);
+		setResizable(false);
+		getContentPane().setLayout(null);
+		setVisible(true);
+		
+		JLabel start_date_label = new JLabel("Start Date (YYYY-MM-DD): ");
+		start_date_label.setBounds(50,50,50,100);
+		getContentPane().add(start_date_label);
+	}
+
+}

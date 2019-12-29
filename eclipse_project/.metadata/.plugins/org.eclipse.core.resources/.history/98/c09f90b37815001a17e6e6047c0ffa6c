@@ -1,0 +1,178 @@
+package se.team2.test.request_speed;
+
+import java.io.BufferedReader; 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.concurrent.CountDownLatch;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
+public class Main {
+	
+	public static void main(String[] args) throws Exception {
+		long start = System.currentTimeMillis();
+		
+		ServerRequestHandler2 srh2 = new ServerRequestHandler2();
+		srh2.makeRequest(ServerRequestHandler.DAYS_30_REQUEST);
+		
+		long end = System.currentTimeMillis();
+		long change = start-end;
+		
+		System.out.println("Completed in "+change+" ms!");
+		
+    }
+	
+	public static void thread_test() throws Exception{
+		CountDownLatch latch = new CountDownLatch(3);
+		
+		ServerRequestHandler a = new ServerRequestHandler();
+		ServerRequestHandler b = new ServerRequestHandler();
+		ServerRequestHandler c = new ServerRequestHandler();
+		
+		a.setParam("symbol", "googl");
+		b.setParam("symbol", "googl");
+		c.setParam("symbol", "googl");
+		a.setParam("date_start", "2019-10-01");
+		a.setParam("date_end", "2019-11-01");
+		
+		
+		Thread ta = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					a.makeRequest(ServerRequestHandler.AGGREGATE_REQUEST);
+					System.out.println("a status: "+a.status());
+					latch.countDown();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		});
+		
+		Thread tb = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					b.makeRequest(ServerRequestHandler.DAYS_30_REQUEST);
+					System.out.println("b status: "+b.status());
+					latch.countDown();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		});
+		
+		
+		Thread tc = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					c.makeRequest(ServerRequestHandler.POP_SEARCH);
+					System.out.println("c status: "+c.status());
+					latch.countDown();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		});
+		
+		long now = System.currentTimeMillis();
+		System.out.println("now "+now);
+		
+		ta.start();
+		tb.start();
+		tc.start();
+		
+		
+		while(latch.getCount() > 0) { }
+		
+		System.out.println(a.size());
+		System.out.println(b.size());
+		System.out.println(c.size());
+		
+		long end = System.currentTimeMillis();
+		System.out.println("end: "+end);
+		System.out.println("delta time: "+(end-now));
+	}
+	
+//	public static void http_speed_comparison() throws Exception{
+//		long start = System.currentTimeMillis();
+//		System.out.println("start time (ms): "+start);
+//    	
+//    	String urlString = "http://fproject-se.ddns.net?mode=30dayreport&symbol=rfem";
+//    	http_new(urlString);
+//
+//        long end = System.currentTimeMillis();
+//        System.out.println("end time (ms): "+end);
+//        System.out.println("Delta Time (ms): "+(end-start));
+//        System.out.println("Delta time (s): "+Math.round((end-start)*1.0/1000*1.0));
+//        
+//		start = System.currentTimeMillis();
+//		System.out.println("start time (ms): "+start);
+//    	
+//       	http_old(urlString);
+//
+//        end = System.currentTimeMillis();
+//        System.out.println("end time (ms): "+end);
+//        System.out.println("Delta Time (ms): "+(end-start));
+//        System.out.println("Delta time (s): "+Math.round((end-start)*1.0/1000*1.0));
+//	}
+//	
+//	public static void http_new(String urlString) throws Exception {
+//        CloseableHttpClient httpClient = HttpClients.createDefault();
+//
+//        try {
+//
+//            HttpGet request = new HttpGet(urlString);
+//
+//            CloseableHttpResponse response = httpClient.execute(request);
+//
+//            try {
+//
+//                HttpEntity entity = response.getEntity();
+//                if (entity != null) {
+//                    // return it as a String
+//                    String result = EntityUtils.toString(entity);
+//                    System.out.println(result);
+//                }
+//
+//            } finally {
+//                response.close();
+//            }
+//        } finally {
+//            httpClient.close();
+//        }
+//	}
+	
+	public static void http_old(String urlString) throws Exception {
+        
+        // old version
+		//Do the HTTP Get request
+		URL url = new URL(urlString);
+		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		con.setRequestMethod("GET");
+		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		String inputLine;
+		StringBuffer content = new StringBuffer();
+		while((inputLine = in.readLine()) != null) content.append(inputLine);
+		in.close();
+		con.disconnect();
+		String jsonString = content.toString();
+		System.out.println(jsonString);
+
+	}
+
+
+}
